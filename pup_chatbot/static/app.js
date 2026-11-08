@@ -69,6 +69,7 @@ function clearChat() {
 }
 
 function greet() {
+  if (box.childElementCount) return;
   add("bot", "Hello po! 👋 Ako ang FAQ Bot ng IT Department ng PUP Parañaque.\nMagtanong po tungkol sa enrollment, prerequisites, grading, o office schedules. Puwede po sa Tagalog, English, o Taglish!");
 }
 

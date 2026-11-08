@@ -1,6 +1,6 @@
 """
 PUP Parañaque IT FAQ Chatbot - Web App
-Run:  python app.py   then open  http://127.0.0.1:5000
+Run:  python app.py then open  http://127.0.0.1:5000
 """
 import os
 import re

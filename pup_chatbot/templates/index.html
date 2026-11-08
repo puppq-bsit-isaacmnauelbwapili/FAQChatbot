@@ -1,100 +1,143 @@
 <!doctype html>
 <html lang="tl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PUP Parañaque IT FAQ Chatbot</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#35102f">
+  <title>PUP Parañaque · IT FAQ Bot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<nav class="nav"><div class="wrap">
-  <a class="brand" href="#"><div class="logo">P</div><div>PUP Parañaque <span class="long">· IT FAQ Bot</span></div></a>
-  <ul>
-    <li><a href="#chat">Chat</a></li>
-    <li><a href="#topics">Topics</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a class="admin" href="/admin">Admin</a></li>
-  </ul>
-</div></nav>
-
-<header class="hero"><div class="wrap">
-  <div>
-    <h1>Mabilis na sagot sa mga <em>tanong sa academics</em>, 24/7.</h1>
-    <p>Enrollment, prerequisites, grading, at office schedules para sa IT students ng PUP Parañaque. Magtanong sa Tagalog, English, o Taglish.</p>
-    <p><a class="btn btn-gold" href="#chat">Simulan ang chat →</a></p>
-    <div class="badges"><span class="chip-s">Rule-based AI</span><span class="chip-s">Taglish-ready</span><span class="chip-s">Walang kailangang i-install</span></div>
-  </div>
-  <div class="hero-art">
-    <div class="b u">Paano mag-enroll?</div>
-    <div class="b a">Paano po mag-enroll: 1. Tingnan ang announcement…</div>
-    <div class="b u">ano ang passing grade</div>
-    <div class="b a">Ang passing grade ay karaniwang 3.00…</div>
-  </div>
-</div></header>
-
-<main class="wrap">
-  <section class="chat-section" id="chat">
-    <div class="chat-card">
-      <div class="chat-head">
-        <div class="avatar">🤖</div>
-        <div><h2>IT FAQ Bot</h2><small><span class="dot"></span>Online</small></div>
-        <div class="spacer"></div>
-        <button class="link-btn" onclick="clearChat()">Clear chat</button>
-      </div>
-      <div id="messages" aria-live="polite"></div>
-      <div class="quick">
-        <button onclick="ask('Paano mag-enroll?')">Paano mag-enroll?</button>
-        <button onclick="ask('Ano ang passing grade?')">Passing grade?</button>
-        <button onclick="ask('Ano ang prerequisite?')">Prerequisite?</button>
-        <button onclick="ask('Anong oras bukas ang office?')">Office hours</button>
-      </div>
-      <div class="composer">
-        <input id="q" type="text" placeholder="I-type ang tanong mo dito…" autocomplete="off" maxlength="500">
-        <button id="send">Send</button>
-      </div>
-      <div class="disclaimer">Ang sagot ng bot ay galing sa curated FAQ. Para sa opisyal na desisyon, lumapit sa kaukulang opisina.</div>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="wrap">
+      <a class="brand" href="#" aria-label="PUP Parañaque IT FAQ Bot home">
+        <span class="logo">P</span>
+        <span class="brand-copy">PUP Parañaque <span class="long">· IT FAQ Bot</span></span>
+        <img class="brand-mascot" src="{{ url_for('static', filename='pup-mascot.png') }}" alt="">
+      </a>
+      <ul>
+        <li><a href="#chat">Chat</a></li>
+        <li><a href="#topics">Topics</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a class="btn-admin" href="{{ url_for('admin_login') }}">Admin</a></li>
+      </ul>
     </div>
-  </section>
+  </nav>
 
-  <section class="block" id="topics">
-    <h2 class="title">Mga puwedeng itanong</h2>
-    <p class="lead">I-click ang kahit anong tanong para makita agad ang sagot.</p>
-    <div class="grid g4">
-      {% for t in suggestions %}
-      <div class="card topic">
-        <div class="ic">{{ t.icon }}</div>
-        <h3>{{ t.category }}</h3>
-        <ul>{% for q in t.questions %}
-          <li><button onclick='askFromTopic({{ q|tojson }})'>{{ q }}</button></li>
-        {% endfor %}</ul>
+  <header class="hero">
+    <div class="wrap hero-layout">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> Your campus FAQ, always within reach</p>
+        <h1>Mabilis na sagot sa mga <em>tanong sa academics</em>, 24/7.</h1>
+        <p class="hero-description">Enrollment, prerequisites, grading, at office schedules para sa IT students ng PUP Parañaque. Magtanong sa Tagalog, English, o Taglish.</p>
+        <a class="btn btn-gold hero-cta" href="#chat">Simulan ang chat <span aria-hidden="true">→</span></a>
+        <div class="badges" aria-label="Chatbot features">
+          <span class="chip-s">Rule-based AI</span>
+          <span class="chip-s">Taglish-ready</span>
+          <span class="chip-s">Walang kailangang i-install</span>
+        </div>
       </div>
-      {% endfor %}
-    </div>
-  </section>
 
-  <section class="block" id="about">
-    <h2 class="title">Paano ito gumagana</h2>
-    <p class="lead">Rule-based ang chatbot. Walang hula o random na sagot, kundi approved FAQ lang.</p>
-    <div class="steps">
-      <div class="step">Tanong ng student</div><span class="arrow">→</span>
-      <div class="step">Text preprocessing</div><span class="arrow">→</span>
-      <div class="step">Keyword &amp; pattern matching</div><span class="arrow">→</span>
-      <div class="step">Rule-based decision engine</div><span class="arrow">→</span>
-      <div class="step">Sagot o fallback</div>
+      <div class="hero-art" aria-label="Sample conversation: Paano mag-enroll?">
+        <div class="art-glow" aria-hidden="true"></div>
+        <div class="art-label"><span class="art-sparkle" aria-hidden="true">✦</span> A quick answer, anytime</div>
+        <div class="sample-chat">
+          <div class="b u">Paano mag-enroll?</div>
+          <div class="b a">Paano po mag-enroll: tingnan ang latest enrollment announcement at sundin ang steps para sa inyong year level. ✨</div>
+        </div>
+        <div class="hero-mascot">
+          <img src="{{ url_for('static', filename='pup-mascot.png') }}" alt="PUP mascot wearing a maroon graduation cap">
+        </div>
+        <div class="mascot-caption"><span class="dot"></span> Nandito para tumulong</div>
+      </div>
     </div>
-    <div class="grid g3" style="margin-top:22px">
-      <div class="card"><h3>Para kanino</h3><p>IT students, faculty members, at campus personnel na madalas makatanggap ng paulit-ulit na tanong.</p></div>
-      <div class="card"><h3>Limitasyon</h3>
-        <ul class="limits"><li>Sumasagot lang sa laman ng knowledge base.</li><li>Maaaring hindi maintindihan ang malabo o sobrang komplikadong tanong.</li><li>Hindi nagbibigay ng opisyal na desisyon.</li></ul></div>
-      <div class="card"><h3>Evaluation</h3><p>Sinusukat gamit ang ISO/IEC 25010: functional suitability, usability, at reliability, kasama ang response accuracy.</p></div>
-    </div>
-  </section>
-</main>
+  </header>
 
-<footer><div class="wrap">
-  <div>IT Electives 1 · Polytechnic University of the Philippines, Parañaque City Campus</div>
-  <div>Development of a Rule-Based AI FAQ Chatbot for Common Academic Questions of IT Students</div>
-</div></footer>
-<script src="{{ url_for('static', filename='app.js') }}"></script>
+  <main class="wrap">
+    <section class="chat-section" id="chat" aria-labelledby="chat-title">
+      <div class="chat-card">
+        <div class="chat-head">
+          <div class="avatar">
+            <img src="{{ url_for('static', filename='pup-mascot.png') }}" alt="">
+          </div>
+          <div class="chat-identity">
+            <h2 id="chat-title">IT FAQ Bot</h2>
+            <small><span class="dot"></span>Online</small>
+          </div>
+          <span class="spacer"></span>
+          <button class="link-btn" type="button" onclick="clearChat()">Clear chat <span aria-hidden="true">↻</span></button>
+        </div>
+
+        <div id="messages" class="chat-box" aria-live="polite" aria-label="Chat messages">
+          <div class="sample-note">Sample conversation</div>
+          <div class="msg bot">Hello po! 👋 Ako ang FAQ Bot ng IT Department ng PUP Parañaque. Magtanong po tungkol sa enrollment, prerequisites, grading, o office schedules.</div>
+          <div class="msg user">Ano ang prerequisite?</div>
+          <div class="msg bot">Ang prerequisite ay subject na dapat ninyong mapasa bago kumuha ng susunod. Sabihin po ninyo kung anong subject, o tingnan ang inyong curriculum checklist.</div>
+        </div>
+
+        <div class="quick" aria-label="Suggested questions">
+          <span class="quick-label">Try asking</span>
+          <button type="button" onclick="ask('Paano mag-enroll?')">Paano mag-enroll?</button>
+          <button type="button" onclick="ask('Ano ang passing grade?')">Passing grade?</button>
+          <button type="button" onclick="ask('Ano ang prerequisite?')">Prerequisite?</button>
+          <button type="button" onclick="ask('Anong oras bukas ang office?')">Office hours</button>
+        </div>
+
+        <div class="composer" role="group" aria-label="Send a question">
+          <input id="q" type="text" placeholder="I-type ang tanong mo dito…" autocomplete="off" maxlength="500" aria-label="Your question">
+          <button id="send" type="button" aria-label="Send question"><span>Send</span><span class="send-icon" aria-hidden="true">↗</span></button>
+        </div>
+        <div class="disclaimer">Ang sagot ng bot ay galing sa curated FAQ. Para sa opisyal na desisyon, lumapit sa kaukulang opisina.</div>
+      </div>
+    </section>
+
+    <section class="block" id="topics">
+      <div class="section-heading">
+        <p class="eyebrow">Explore the FAQ</p>
+        <h2 class="title">Mga puwedeng itanong</h2>
+        <p class="lead">Pumili ng tanong para makita agad ang sagot mula sa curated FAQs.</p>
+      </div>
+      <div class="grid g4">
+        {% for t in suggestions %}
+        <div class="card topic">
+          <div class="ic">{{ t.icon }}</div>
+          <h3>{{ t.category }}</h3>
+          <ul>{% for q in t.questions %}
+            <li><button type="button" onclick='askFromTopic({{ q|tojson }})'>{{ q }}</button></li>
+          {% endfor %}</ul>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="block" id="about">
+      <div class="section-heading">
+        <p class="eyebrow">Clear, consistent answers</p>
+        <h2 class="title">Paano ito gumagana</h2>
+        <p class="lead">Rule-based ang chatbot. Walang hula o random na sagot, kundi approved FAQ lang.</p>
+      </div>
+      <div class="steps">
+        <div class="step">Tanong ng student</div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step">Text preprocessing</div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step">Keyword &amp; pattern matching</div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step">Rule-based decision engine</div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step">Sagot o fallback</div>
+      </div>
+      <div class="grid g3 about-cards">
+        <div class="card"><h3>Para kanino</h3><p>IT students, faculty members, at campus personnel na madalas makatanggap ng paulit-ulit na tanong.</p></div>
+        <div class="card"><h3>Limitasyon</h3>
+          <ul class="limits"><li>Sumasagot lang sa laman ng knowledge base.</li><li>Maaaring hindi maintindihan ang malabo o sobrang komplikadong tanong.</li><li>Hindi nagbibigay ng opisyal na desisyon.</li></ul></div>
+        <div class="card"><h3>Evaluation</h3><p>Sinusukat gamit ang ISO/IEC 25010: functional suitability, usability, at reliability, kasama ang response accuracy.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>IT Electives 1 · Polytechnic University of the Philippines, Parañaque City Campus</div>
+      <div>Development of a Rule-Based AI FAQ Chatbot for Common Academic Questions of IT Students</div>
+    </div>
+  </footer>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
